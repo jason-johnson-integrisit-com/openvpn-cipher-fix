@@ -55,7 +55,7 @@ function Add-LineAfterMatch {
 if ($filename) {
     $confirmation = Read-Host "The hardcoded path is '$filename'. Does this look right? (yes/no)"
     if ($confirmation -ne 'yes') {
-        $filename = Read-Host "Enter the filepath:"
+        $filename = Read-Host "Enter the filepath: Note: You can enter .\filename for current directory you ran script from."
     }
 } else {
     $filename = Read-Host "Enter the filepath:"
