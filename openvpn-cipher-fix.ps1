@@ -4,19 +4,19 @@
 .DESCRIPTION
   Openvpn releases past 2.5 don't work by default with the AES-256-CBC cipher. This will allow you to add this into your openvpn config file programmatically to fix it.
 .PARAMETER <Parameter_Name>
-    <Brief description of parameter input required. Repeat this attribute if required>
+    None required. It will check for ovpn files in the c:\users\openvpn\config\* and c:\program files\openvpn\config folders
 .INPUTS
   <Inputs if any, otherwise state None>
 .OUTPUTS
-  <Outputs if any, otherwise state None - example: Log file stored in C:\Windows\Temp\<name>.log>
+  Just some console output to see what is happening.
 .NOTES
-  Version:        1.0
+  Version:        1.1
   Author:         Jason Johnson
-  Creation Date:  8.15.2023
+  Creation Date:  8.16.2023
   Purpose/Change: Initial script development
   
 .EXAMPLE
-  <Example goes here. Repeat this attribute for more than one example>
+  Nothing to add here.
 #>
 # Function to add line after match
 function Add-LineAfterMatch {
