@@ -18,64 +18,49 @@
 .EXAMPLE
   <Example goes here. Repeat this attribute for more than one example>
 #>
-
-# You can hardcode the path here if you want. For example: "C:\path\to\your\file.txt"
-$filename = ""
-
 # Function to add line after match
+
 function Add-LineAfterMatch {
-    param(
-        [string]$path,
-        [string]$match = 'cipher',
-        [string]$insertText = 'data-ciphers AES-256-CBC'
-    )
+  $path = $args[0]  # Get the first argument passed to the function as the path
+  $match = 'cipher'
+  $insertText = 'data-ciphers AES-256-CBC'
 
-    $output = @()
-    $fileContent = Get-Content -Path $path
-    $matchFound = $false
+  $fileContent = Get-Content -Path $path
+  $alreadyExists = $fileContent -like "*$insertText*"
 
-    foreach ($line in $fileContent) {
-        $output += $line
-        if ($line -like "$match*") {
-            $matchFound = $true
-            $output += $insertText
-        }
-    }
+  # Check if the insertText already exists
+  if ($alreadyExists) {
+      return
+  }
 
-    # Check if match was found
-    if (-not $matchFound) {
-        Write-Error "Error: No line starting with '$match' was found in the file!"
-        exit 2
-    }
+  $matchFound = $false
+  $output = @()
 
-    $output | Set-Content -Path $path
+  foreach ($line in $fileContent) {
+      $output += $line
+      if ($line -like "$match*") {
+          $matchFound = $true
+          $output += $insertText
+      }
+  }
+
+  # Save only if a match was found and we made modifications
+  if ($matchFound) {
+      $output | Set-Content -Path $path
+  }
 }
 
-# Check if filename is hardcoded
-if ($filename) {
-    $confirmation = Read-Host "The hardcoded path is '$filename'. Does this look right? (yes/no)"
-    if ($confirmation -ne 'yes') {
-        $filename = Read-Host "Enter the filepath: Note: You can enter .\filename for current directory you ran script from."
-    }
-} else {
-    $filename = Read-Host "Enter the filepath:"
-}
+# Paths to search
+$defaultUserPath = "C:\Users\*\OpenVPN\config"
+$programPath = "C:\Program Files\OpenVPN\config"
 
-# Confirm the provided file path
-$confirmation = Read-Host "You entered '$filename'. Is this correct? (yes/no)"
-if ($confirmation -ne 'yes') {
-    Write-Error "Exiting due to incorrect file path."
-    exit 1
-}
+# Get all .ovpn files in the paths and their subdirectories
+$files = Get-ChildItem -Path $defaultUserPath, $programPath -Recurse -Filter "*.ovpn"
 
-# Check if file exists
-if (-not (Test-Path $filename)) {
-    Write-Error "Error: File '$filename' not found!"
-    exit 3
+foreach ($file in $files) {
+  Add-LineAfterMatch $file.FullName  # Here we're just passing the file path as an argument
 }
-
-# Call the function to modify the file
-Add-LineAfterMatch -path $filename
 
 Write-Output "Operation completed successfully!"
+
 
